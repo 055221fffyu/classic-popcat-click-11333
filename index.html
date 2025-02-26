@@ -3,9 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <title>POPCAT CLASSIC</title>
+    <style>
+        /*容器 box 高度100vh flex排版方向column 水平置中*/
+        /*容器樣式 背景顏色 #bdaa90*/
+        body {
+            display: flex;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background-color: #bdaa90;
+        }
+
+        /*標題 box 寬度80% 上方間距 2em*/
+        /*標題 box 最大寬度 600px*/
+        .title {
+            width: 80%;
+            margin-top: 2em;
+            max-width: 600px;
+        }
+
+        /*文字 box 寬度100%*/
+        /*文字樣式 文字置中 文字白色 大小80px -webkit-text-stroke 3px 黑色*/
+        /*文字 box 最大寬度 800px*/
+        .cat-img {
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 80px;
+            -webkit-text-stroke: 3px black;
+            max-width: 800px;
+        }
+
+        /*文字 div 排版填滿剩餘空間*/
+        .cat-img {
+            flex: 1;
+        }
+
+        /*防止文字被選取*/
+        .cat-img {
+            user-select: none;
+        }
+
+        /*文字 div 背景圖片 用 id 設定imgs/p.png 圖片靠下 填滿容器contain 不重複*/
+        #p {
+            background-image: url('imgs/p.png');
+            background-position: bottom;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        /*新增文字 div 背景圖片 用 id 設定 imgs/op.png*/
+        #op {
+            background-image: url('imgs/op.png');
+            background-position: bottom;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        /*body box 編距為0*/
+        /*字型 sans-serif*/
+        body {
+            margin: 0;
+            font-family: sans-serif;
+        }
+
+    </style>
 </head>
 <body>
     <img class="title" src="imgs/popcat.svg" alt="POPCAT">
     <div class="cat-img" id="p">0</div>
+<script>
+    // 用 javascript 預載張嘴圖片 op.png
+    const img = new Image();
+    img.src = 'imgs/op.png';
+
+    // 1.計數器初始化
+    let count = 0;
+    // 將計數器顯示到 HTML 元素，用 id 抓取
+    const catImg = document.getElementById('p');
+    // 顯示計數器
+    catImg.textContent = count;
+    // 寫一個function 計數器累加
+    function addCount() {
+        // 2.計數器累加
+        count++;
+    }
+function updateCatImage() {
+    // 3.計數器累加
+    addCount();
+    // 註冊滑鼠按下的時候，更新計數器的顯示
+    catImg.textContent = count;
+    // 切換張嘴圖片
+    catImg.id = 'op';
+    // 當滑鼠按下，播放 pops/pop1.mp3
+    const audio = new Audio('pops/pop1.mp3');
+    audio.play();
+    // 當滑鼠按下輪流播放 pop1.mp3,pop2.mp3,pop3.mp3,pop4.mp3
+    // 用一個變數來記錄目前播放到第幾個音效
+    let popIndex = 1;
+    // 用 setInterval 來每 50 毫秒播放一次音效
+    const intervalId = setInterval(() => {
+        // 播放 pop1.mp3, pop2.mp3, pop3.mp3, pop4.mp3
+        const audio = new Audio(`pops/pop${popIndex}.mp3`);
+        audio.play();
+        // popIndex 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, ...
+        popIndex = popIndex % 4 + 1;
+    }, 50);
+    // 等待 100 毫秒，停止播放音效
+    setTimeout(() => {
+        clearInterval(intervalId);
+    }, 100);
+
+}
+
+    //改成呼叫function
+    document.addEventListener('mousedown', updateCatImage);
+
+
+    // 改成呼叫function
+    document.addEventListener('keydown', updateCatImage);
+
+
+    // 鍵盤放開的時候恢復為原來圖片
+    document.addEventListener('keyup', function () {
+        // 恢復原來圖片
+        catImg.id = 'p';
+    });
+
+    // 當滑鼠放開，便恢復原來圖片
+    // 滑鼠放開後，等待 25 毫秒，再切回閉嘴圖片
+    document.addEventListener('mouseup', function () {
+        // 恢復原來圖片
+        catImg.id = 'p';
+        // 等待 25 毫秒，再切回閉嘴圖片
+        setTimeout(() => {
+            catImg.id = 'p';
+        }, 25);
+    });
+
+    // 可以紀錄上次的點擊數 (用 cookie) 設定名稱
+    const cookieName = 'popcatCount';
+    // 取得上次的點擊數
+    const lastCount = parseInt(document.cookie.split('; ').find(row => row.startsWith(cookieName)).split('=')[1]);
+    // 如果有上次的點擊數，就從上次的點擊數開始
+    if (!isNaN(lastCount)) {
+        count = lastCount;
+        catImg.textContent = count;
+    }
+
+
+</script>
 </body>
 </html>
